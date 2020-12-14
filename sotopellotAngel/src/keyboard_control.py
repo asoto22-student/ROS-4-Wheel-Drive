@@ -56,11 +56,11 @@ try:
         elif char == ord('w'):
             key2ros(0, movement_speed, "Moving forward")
         elif char == ord('s'):
-            key2ros(0, -movement_speed, "Moving backwards")
+            key2ros(0, -movement_speed * 0.01, "Moving backwards")
         elif char == ord('a'):
             key2ros(movement_speed, 0, "Turning left")
         elif char == ord('d'):
-            key2ros(-movement_speed * 0.01, 0, "Turning right")
+            key2ros(-movement_speed, 0, "Turning right")
         elif char == ord('i'):
             movement_speed += movement_increment
             if (movement_speed > max_speed):
