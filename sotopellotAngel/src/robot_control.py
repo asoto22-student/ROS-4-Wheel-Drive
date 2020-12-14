@@ -40,7 +40,7 @@ def getValues(msg):
     l_target = dd[0]
     r_target = dd[1]
 
-    print(l_target, r_target)
+    #print(l_target, r_target)
 
 sub = rospy.Subscriber('/cmd_vel', Twist, getValues)
 
@@ -49,7 +49,7 @@ def getRate(wheel_num):
     buff.joint_name = robot_name + seperator + wheel_dict[wheel_num] + wheel_hinge
     val = get_effort(buff.joint_name)
 
-    print("Wheel", wheel_dict[wheel_num], "Effort:", val.rate[0])
+    #print("Wheel", wheel_dict[wheel_num], "Effort:", val.rate[0])
 
     return val.rate[0]
 
@@ -75,7 +75,7 @@ def moveWheel(wheel_num, target_effort):
     setEffort(wheel_num, c)
 
 def main():
-    rospy.init_node('fw_control', anonymous=True)
+    rospy.init_node('fw_control')
     rate = rospy.Rate(PUB_FREQ)
 
     while not rospy.is_shutdown():

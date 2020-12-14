@@ -14,13 +14,9 @@ Install()
     # Makes a folder for install
     # -p makes every folder inbetween, so it creates all the subfolders for you
     mkdir -p $INSTALL_DIR/$PROJECT_NAME
-    mkdir -p $INSTALL_BIN
-
-    # Put out bin into bin, assuming we're in the same folder
-    cp $BIN_NAME $INSTALL_BIN/
 
     # put all the install files in /etc
-    cp -r * $INSTALL_DIR/PROJECT_NAME/
+    cp -r sotopellotAngel $INSTALL_DIR/
 
     export PATH="$PATH:$INSTALL_BIN"
     exit 0
@@ -29,7 +25,6 @@ Install()
 Uninstall()
 {
     rm -r $INSTALL_DIR/$PROJECT_NAME
-    rm $INSTALL_BIN/$BIN_NAME
     exit 0
 }
 
@@ -37,14 +32,26 @@ Start()
 {
     cat "1" > /tmp/$PROJECT_NAME
     cd $INSTALL_DIR/$PROJECT_NAME/
+
     ./loadRobot.sh
-    echo "==== Robot Loaded ===="
+    sleep 5s
+
+    echo "======== Robot Loaded ========"
+    cd $INSTALL_DIR/$PROJECT_NAME/src
+
+    python robot_control.py &
+    echo "==== Robot Control Loaded ===="
+
+    python keyboard_control.py
+    echo "===== Keyboard Unloaded ======"
+
     exit 0
 }
 
 Stop()
 {
     ./rmRobot.sh
+    rosnode kill /fw_control
     exit 0
 }
 
@@ -76,7 +83,7 @@ case $1 in
     Install
     ;;
 'uninstall')
-    Install
+    Uninstall
     ;;
 'start')
     Start $@

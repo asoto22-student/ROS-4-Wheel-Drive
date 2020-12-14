@@ -3,7 +3,7 @@ import rospy
 from geometry_msgs.msg import Twist
 import curses
 
-rospy.init_node('keyboard_control', anonymous=True)
+rospy.init_node('keyboard_control')
 pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 
 move_vect = Twist()
