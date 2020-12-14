@@ -10,14 +10,14 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Header
 
 # Constants
-MOVE_SPEED = 10
-ANGULAR_SPEED = 15
+MOVE_SPEED = 15
+ANGULAR_SPEED = 20
 PUB_FREQ = 10
 START_TIME = rospy.Time(0, 0)
 END_TIME = rospy.Time(0.1/PUB_FREQ, 0)
 
 # Error Gain
-k = 7.5
+k = 8.5
 
 # Global Variables
 l_target = 0
@@ -30,8 +30,10 @@ wheel_dict = ["f_left", "f_right", "b_left", "b_right"]
 wheel_hinge = "_wheel_hinge"
 
 # Ros Services
+rospy.wait_for_service('/gazebo/apply_joint_effort')
+rospy.wait_for_service('/gazebo/get_joint_properties')
 apply_effort = rospy.ServiceProxy('/gazebo/apply_joint_effort', ApplyJointEffort)
-get_effort = rospy.ServiceProxy('/gazebo/get_joint_properties',GetJointProperties)
+get_effort = rospy.ServiceProxy('/gazebo/get_joint_properties', GetJointProperties)
 
 def getValues(msg):
     global l_target, r_target

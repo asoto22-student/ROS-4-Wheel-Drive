@@ -21,7 +21,7 @@ curses.cbreak()
 
 # Screen Text Information
 screen.addstr(0, 0, "------------------------------------------------")
-screen.addstr(1, 0, "--------- dd_robot keyboard controller ---------")
+screen.addstr(1, 0, "--------- fw_robot keyboard controller ---------")
 screen.addstr(2, 0, "------------------------------------------------")
 screen.addstr(3, 0, "- Press w to move forward")
 screen.addstr(4, 0, "- Press a to turn left")
@@ -60,7 +60,7 @@ try:
         elif char == ord('a'):
             key2ros(movement_speed, 0, "Turning left")
         elif char == ord('d'):
-            key2ros(-movement_speed, 0, "Turning right")
+            key2ros(-movement_speed * 0.01, 0, "Turning right")
         elif char == ord('i'):
             movement_speed += movement_increment
             if (movement_speed > max_speed):

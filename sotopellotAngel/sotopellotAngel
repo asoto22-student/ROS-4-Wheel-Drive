@@ -36,22 +36,27 @@ Start()
 
     ./loadRobot.sh
 
+    echo " "
     echo "======== Robot Loaded ========"
+    echo " "
     cd $INSTALL_DIR/$PROJECT_NAME/src
 
     python robot_control.py &
     echo "==== Robot Control Loaded ===="
+    echo " "
 
     python keyboard_control.py
     echo "===== Keyboard Unloaded ======"
+    echo " "
 
     exit 0
 }
 
 Stop()
 {
-    ./rmRobot.sh
+    cd $INSTALL_DIR/$PROJECT_NAME/
     rosnode kill /fw_control
+    ./rmRobot.sh
     exit 0
 }
 
@@ -71,7 +76,7 @@ Help()
     echo 'uninstall                 : Uninstall the progam'
     echo 'start                     : Starts the program'
     echo 'stop                      : Stops the program'
-    echo 'status                    : Checks if there are locks are made'
+    echo 'status                    : Checks if any locks were made'
     echo 'help                      : Shows this dialog'
     echo ' '
     echo ' '
