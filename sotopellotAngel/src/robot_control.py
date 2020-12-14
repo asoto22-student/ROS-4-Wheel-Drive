@@ -10,14 +10,14 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Header
 
 # Constants
-MOVE_SPEED = 5
-ANGULAR_SPEED = 5
+MOVE_SPEED = 10
+ANGULAR_SPEED = 15
 PUB_FREQ = 10
 START_TIME = rospy.Time(0, 0)
 END_TIME = rospy.Time(0.1/PUB_FREQ, 0)
 
 # Error Gain
-k = 1
+k = 7.5
 
 # Global Variables
 l_target = 0
@@ -32,7 +32,6 @@ wheel_hinge = "_wheel_hinge"
 # Ros Services
 apply_effort = rospy.ServiceProxy('/gazebo/apply_joint_effort', ApplyJointEffort)
 get_effort = rospy.ServiceProxy('/gazebo/get_joint_properties',GetJointProperties)
-sub = rospy.Subscriber('/cmd_vel', Twist, getValues)
 
 def getValues(msg):
     global l_target, r_target
@@ -43,12 +42,16 @@ def getValues(msg):
 
     print(l_target, r_target)
 
+sub = rospy.Subscriber('/cmd_vel', Twist, getValues)
+
 def getRate(wheel_num):
     buff = GetJointProperties()
     buff.joint_name = robot_name + seperator + wheel_dict[wheel_num] + wheel_hinge
     val = get_effort(buff.joint_name)
 
-    return = val.rate[0]
+    print("Wheel", wheel_dict[wheel_num], "Effort:", val.rate[0])
+
+    return val.rate[0]
 
 def getDesRate(x, y):
     x *= ANGULAR_SPEED
@@ -63,7 +66,7 @@ def getDesRate(x, y):
 
 def setEffort(wheel_num, effort_amount):
     wheel_name = robot_name + seperator + wheel_dict[wheel_num] + wheel_hinge
-    apply_effort(wheel_name, effort_amount, start, END_TIME)
+    apply_effort(wheel_name, effort_amount, START_TIME, END_TIME)
 
 def moveWheel(wheel_num, target_effort):
     a = getRate(wheel_num)
@@ -72,8 +75,7 @@ def moveWheel(wheel_num, target_effort):
     setEffort(wheel_num, c)
 
 def main():
-    rospy.init_node('dd_ctrl', anonymous=True)
-    os.system('./loadModel.sh')
+    rospy.init_node('fw_control', anonymous=True)
     rate = rospy.Rate(PUB_FREQ)
 
     while not rospy.is_shutdown():

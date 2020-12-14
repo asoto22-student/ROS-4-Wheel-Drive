@@ -1,0 +1,14 @@
+<launch>
+  <node pkg ="sotopellotAngel"
+        type = "keyboard_control.py"
+        name = "keyboard_control"
+        output = "screen">
+  </node>
+
+  <node pkg ="sotopellotAngel"
+        type = "robot_control.py"
+        name = "fw_control"
+        output = "screen">
+  </node>
+
+</launch>

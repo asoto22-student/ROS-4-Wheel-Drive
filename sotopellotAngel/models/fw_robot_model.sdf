@@ -6,7 +6,7 @@
             <pose>0 0 0.1 0 0 0</pose>
             <static>true</static>
             <inertial>
-                <mass>10</mass>
+                <mass>25</mass>
             </inertial>
 
             <collision name='collision'>
