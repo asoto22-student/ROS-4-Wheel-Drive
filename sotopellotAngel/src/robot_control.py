@@ -10,103 +10,77 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Header
 
 # Constants
-move_speed = 5
-angular_speed = 5
-pub_freq = 10
+MOVE_SPEED = 5
+ANGULAR_SPEED = 5
+PUB_FREQ = 10
+START_TIME = rospy.Time(0, 0)
+END_TIME = rospy.Time(0.1/PUB_FREQ, 0)
+
+# Error Gain
+k = 1
 
 # Global Variables
-l_wheel_speed = 0
-r_wheel_speed = 0
+l_target = 0
+r_target = 0
 
-target_vels = 0.0
-target_angvels = 0.0
+# Name Constants
+robot_name = "fw_robot"
+seperator = "::"
+wheel_dict = ["f_left", "f_right", "b_left", "b_right"]
+wheel_hinge = "_wheel_hinge"
 
-def get_values(msg):
-    global l_wheel_speed, r_wheel_speed
-    dd = ros2diffDrive(msg.linear.x, msg.linear.y)
+# Ros Services
+apply_effort = rospy.ServiceProxy('/gazebo/apply_joint_effort', ApplyJointEffort)
+get_effort = rospy.ServiceProxy('/gazebo/get_joint_properties',GetJointProperties)
+sub = rospy.Subscriber('/cmd_vel', Twist, getValues)
 
-    l_wheel_speed = dd[0]
-    r_wheel_speed = dd[1]
+def getValues(msg):
+    global l_target, r_target
+    dd = getDesRate(msg.linear.x, msg.linear.y)
 
-    print(l_wheel_speed, r_wheel_speed)
+    l_target = dd[0]
+    r_target = dd[1]
 
-def getPos(pub):
+    print(l_target, r_target)
+
+def getRate(wheel_num):
     buff = GetJointProperties()
+    buff.joint_name = robot_name + seperator + wheel_dict[wheel_num] + wheel_hinge
+    val = get_effort(buff.joint_name)
 
-    buff.joint_name = 'dd_robot::left_wheel_hinge'
-    val = pub(buff.joint_name)
-    leftw = val.rate[0]
-    
-    buff.joint_name = 'dd_robot::right_wheel_hinge'
-    val = pub(buff.joint_name)
-    rightw = val.rate[0]
+    return = val.rate[0]
 
-    v = (leftw, rightw)
-    return v
-
-def ros2diffDrive(x, y):
-    global target_vels, target_angvels
-
-    if (x > 1.0):
-        x = 1.0
-    if (x < -1.0):
-        x = -1.0
-    if (y > 1.0):
-        y = 1.0
-    if (y < -1.0):
-        y = -1.0
-
-    x *= angular_speed
-    y *= move_speed
-
-    target_vels = y
-    target_angvels = x
-
+def getDesRate(x, y):
+    x *= ANGULAR_SPEED
+    y *= MOVE_SPEED
     v = (1.0 - np.abs(x)) * y + y
     w = (1.0 - np.abs(y)) * x + x
-    r = (v + w) / 2.0
-    l = (v - w) / 2.0
-    
-    wheel_l = l
-    wheel_r = r
+
+    wheel_r = (v + w) / 2.0
+    wheel_l = (v - w) / 2.0
+
     return [wheel_l, wheel_r]
 
-def vel2ros(pub, v, start_time, end_time):
-    if (np.abs(target_vels) > 0.1):
-        if (v[0] < l_wheel_speed):
-            pub("dd_robot::left_wheel_hinge", l_wheel_speed, start_time, end_time)
-        else:
-            pub("dd_robot::left_wheel_hinge", -l_wheel_speed, start_time, end_time)
-        if (v[1] < r_wheel_speed):
-            pub("dd_robot::right_wheel_hinge", r_wheel_speed, start_time, end_time)
-        else:
-            pub("dd_robot::right_wheel_hinge", -r_wheel_speed, start_time, end_time)
-    elif (np.abs(target_angvels) > 0.1):
-            pub("dd_robot::left_wheel_hinge", l_wheel_speed, start_time, end_time)
-            pub("dd_robot::right_wheel_hinge", r_wheel_speed, start_time, end_time)
-    else:
-        pub("dd_robot::left_wheel_hinge", -v[0], start_time, end_time)
-        pub("dd_robot::right_wheel_hinge", -v[1], start_time, end_time)
+def setEffort(wheel_num, effort_amount):
+    wheel_name = robot_name + seperator + wheel_dict[wheel_num] + wheel_hinge
+    apply_effort(wheel_name, effort_amount, start, END_TIME)
+
+def moveWheel(wheel_num, target_effort):
+    a = getRate(wheel_num)
+    e = target_effort - a
+    c = e * k
+    setEffort(wheel_num, c)
 
 def main():
     rospy.init_node('dd_ctrl', anonymous=True)
-    pub = rospy.ServiceProxy('/gazebo/apply_joint_effort', ApplyJointEffort)
-    pubget = rospy.ServiceProxy('/gazebo/get_joint_properties',GetJointProperties)
-    sub = rospy.Subscriber('/cmd_vel', Twist, get_values)
-
     os.system('./loadModel.sh')
-
-    rate = rospy.Rate(pub_freq)
-
-    start_time = rospy.Time(0, 0)
-    end_time = rospy.Time(0.1/pub_freq, 0)
+    rate = rospy.Rate(PUB_FREQ)
 
     while not rospy.is_shutdown():
-        v = getPos(pubget)
-        print v
-        print ('target_vels:', target_vels, 'target_angvels:', target_angvels)
-
-        vel2ros(pub, v, start_time, end_time)
+        moveWheel(0, l_target)
+        moveWheel(1, r_target)
+        moveWheel(2, l_target)
+        moveWheel(3, r_target)
 
         rate.sleep()
 

@@ -1,33 +1,41 @@
+<?xml version='1.0'?>
 <sdf version="1.7">
-    <model name='dd_robot'>
-    <link name='chassis'>
-        <pose>0 0 0.1 0 0 0</pose>
-        <static>true</static>
-        <inertial>
-		    <mass>10</mass>
-	    </inertial>
+    <model name='fw_robot'>
+        <!-- Robot Chassis -->
+        <link name='chassis'>
+            <pose>0 0 0.1 0 0 0</pose>
+            <static>true</static>
+            <inertial>
+                <mass>10</mass>
+            </inertial>
 
-        <collision name='collision'>
-            <geometry>
-                <box>
-                    <size> 0.4 0.2 0.1 </size>
-                </box>
-            </geometry>
-        </collision>
+            <collision name='collision'>
+                <geometry>
+                    <box>
+                        <size> 0.45 0.2 0.1 </size>
+                    </box>
+                </geometry>
+            </collision>
 
-        <visual name='visual'>
-            <geometry>
-                <box>
-                    <size> 0.4 0.2 0.1 </size>
-                </box>
-            </geometry>
-        </visual>
-
+            <visual name='visual'>
+                <geometry>
+                    <box>
+                        <size> 0.45 0.2 0.1 </size>
+                    </box>
+                </geometry>
+                <material>
+                    <ambient>0.1 0.1 0.1 1</ambient>
+                    <diffuse>0.1 0.1 0.2 1</diffuse>
+                    <specular>0 0 0 0</specular>
+                    <emissive>0 0 0 1</emissive>
+                </material>
+            </visual>
+        </link>
+        
         <!-- Front Left Wheel -->
         <link name='f_left_wheel'>
-            <pose>0.1 0.13 0.1 0 1.5707 1.5707</pose>
-
-            <collision name='lw_collision'>
+            <pose>0.15 0.13 0.1 0 1.5707 1.5707</pose>
+            <collision name='flw_collision'>
                 <geometry>
                     <cylinder>
                         <radius>0.1</radius>
@@ -43,21 +51,19 @@
                     </ode>
                 </friction>
             </collision>
-
-            <visual name='lw_visual'>
+            <visual name='flw_visual'>
                 <geometry>
                     <cylinder>
                         <radius>0.1</radius>
                         <length>0.05</length>
                     </cylinder>
                 </geometry>
+                <material></material>
             </visual>
-
         </link>
-
         <joint type='revolute' name='f_left_wheel_hinge'>
             <pose> 0 0 -0.03 0 0 0 </pose>
-            <child>left_wheel</child>
+            <child>f_left_wheel</child>
             <parent>chassis</parent>
             <axis>
                 <xyz>0 0 1</xyz>
@@ -74,8 +80,8 @@
 
         <!-- Front Right Wheel -->
         <link name='f_right_wheel'>
-            <pose>0.1 -0.13 0.1 0 1.5707 1.5707</pose>
-            <collision name='lw_collision'>
+            <pose>0.15 -0.13 0.1 0 1.5707 1.5707</pose>
+            <collision name='frw_collision'>
                 <geometry>
                     <cylinder>
                         <radius>0.1</radius>
@@ -95,19 +101,19 @@
                 </surface>
                 
             </collision>
-            <visual name='lw_visual'>
+            <visual name='frw_visual'>
                 <geometry>
                     <cylinder>
                         <radius>0.1</radius>
                         <length>0.05</length>
                     </cylinder>
                 </geometry>
+                <material></material>
             </visual>
         </link>
-
         <joint type='revolute' name='f_right_wheel_hinge'>
             <pose> 0 0 0.03 0 0 0 </pose>
-            <child>right_wheel</child>
+            <child>f_right_wheel</child>
             <parent>chassis</parent>
             <axis>
                 <xyz>0 0 1</xyz>
@@ -124,9 +130,8 @@
 
         <!-- Back Left Wheel -->
         <link name='b_left_wheel'>
-            <pose>0.1 0.13 0.1 0 1.5707 1.5707</pose>
-
-            <collision name='lw_collision'>
+            <pose>-0.15 0.13 0.1 0 1.5707 1.5707</pose>
+            <collision name='blw_collision'>
                 <geometry>
                     <cylinder>
                         <radius>0.1</radius>
@@ -142,21 +147,19 @@
                     </ode>
                 </friction>
             </collision>
-
-            <visual name='lw_visual'>
+            <visual name='blw_visual'>
                 <geometry>
                     <cylinder>
                         <radius>0.1</radius>
                         <length>0.05</length>
                     </cylinder>
                 </geometry>
+                <material></material>
             </visual>
-
         </link>
-
         <joint type='revolute' name='b_left_wheel_hinge'>
             <pose> 0 0 -0.03 0 0 0 </pose>
-            <child>left_wheel</child>
+            <child>b_left_wheel</child>
             <parent>chassis</parent>
             <axis>
                 <xyz>0 0 1</xyz>
@@ -173,8 +176,8 @@
 
         <!-- Back Right Wheel -->
         <link name='b_right_wheel'>
-            <pose>0.1 -0.13 0.1 0 1.5707 1.5707</pose>
-            <collision name='lw_collision'>
+            <pose>-0.15 -0.13 0.1 0 1.5707 1.5707</pose>
+            <collision name='brw_collision'>
                 <geometry>
                     <cylinder>
                         <radius>0.1</radius>
@@ -194,19 +197,19 @@
                 </surface>
                 
             </collision>
-            <visual name='lw_visual'>
+            <visual name='brw_visual'>
                 <geometry>
                     <cylinder>
                         <radius>0.1</radius>
                         <length>0.05</length>
                     </cylinder>
                 </geometry>
+                <material></material>
             </visual>
         </link>
-
         <joint type='revolute' name='b_right_wheel_hinge'>
             <pose> 0 0 0.03 0 0 0 </pose>
-            <child>right_wheel</child>
+            <child>b_right_wheel</child>
             <parent>chassis</parent>
             <axis>
                 <xyz>0 0 1</xyz>
@@ -220,6 +223,5 @@
                 <velocity>0.005</velocity>
             </limit>
         </joint>
-
     </model>
 </sdf>
